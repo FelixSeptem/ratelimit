@@ -2,7 +2,7 @@ package ratelimit
 
 import (
 	"fmt"
-	"github.com/golang/go/src/math/rand"
+	"math/rand"
 	"sync"
 	"testing"
 	"time"
@@ -20,16 +20,18 @@ func TestTokenBucket(t *testing.T) {
 		wg.Done()
 	}()
 
-	// consumer
-	go func() {
-		for i := 0; i < 1000; i++ {
-			time.Sleep(time.Second * time.Duration(rand.Intn(7)))
-			wg.Add(1)
-			uid := tb.FetchToken()
-			wg.Done()
-			fmt.Printf("fetch token result:%v\n", uid)
-		}
-	}()
+	for i := 0; i < 3; i++ {
+		// start multiple consumer
+		go func(n int) {
+			for i := 0; i < 1000; i++ {
+				time.Sleep(time.Second * time.Duration(rand.Intn(7)))
+				wg.Add(1)
+				uid := tb.FetchToken()
+				wg.Done()
+				fmt.Printf("[Consumer %d]fetch token result:%v\n", n, uid)
+			}
+		}(i)
+	}
 	wg.Wait()
 	time.Sleep(time.Second * 1800)
 }
