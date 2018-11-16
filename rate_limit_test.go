@@ -16,7 +16,7 @@ func TestTokenBucket(t *testing.T) {
 	// producer
 	go func() {
 		wg.Add(1)
-		tb.FillToken(time.Second * 1)
+		tb.FillToken(time.Millisecond * 100)
 		wg.Done()
 	}()
 
@@ -29,6 +29,9 @@ func TestTokenBucket(t *testing.T) {
 				uid := tb.FetchToken()
 				wg.Done()
 				fmt.Printf("[Consumer %d]fetch token result:%v\n", n, uid)
+				if i%10 == 0 {
+					tb.Flush(time.Second)
+				}
 			}
 		}(i)
 	}

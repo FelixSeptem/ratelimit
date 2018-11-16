@@ -37,6 +37,18 @@ func (t *tokenBucket) Preheat(reserved int32) error {
 	return nil
 }
 
+func (t *tokenBucket) Flush(flushDuration time.Duration) error {
+	ticker := time.NewTicker(flushDuration)
+	for {
+		select {
+		case <-t.TokenBucket:
+			continue
+		case <-ticker.C:
+			return nil
+		}
+	}
+}
+
 func (t *tokenBucket) FillToken(fillInterval time.Duration) {
 	var wg sync.WaitGroup
 	go func() {
