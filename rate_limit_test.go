@@ -36,5 +36,5 @@ func TestTokenBucket(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-	time.Sleep(time.Second * 1800)
+	time.Sleep(time.Second * 10)
 }
