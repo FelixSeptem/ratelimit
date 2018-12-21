@@ -51,18 +51,17 @@ func (t *tokenBucket) Flush(flushDuration time.Duration) error {
 
 func (t *tokenBucket) FillToken(fillInterval time.Duration) {
 	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		ticker := time.NewTicker(fillInterval)
 		for {
 			uid, _ := uuid.NewV4()
+			<-ticker.C
 			select {
-			case <-ticker.C:
-				select {
-				case t.TokenBucket <- uid:
-				default:
-				}
+			case t.TokenBucket <- uid:
+			default:
 			}
+
 			fmt.Printf("bucket length: %d with %v\n", len(t.TokenBucket), time.Now())
 		}
 	}()

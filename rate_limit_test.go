@@ -10,12 +10,14 @@ import (
 
 func TestTokenBucket(t *testing.T) {
 	tb := InitTokenBucket(3600)
-	tb.Preheat(100)
+	if err := tb.Preheat(100); err != nil {
+		t.Fatal(err)
+	}
 	var wg sync.WaitGroup
 
 	// producer
+	wg.Add(1)
 	go func() {
-		wg.Add(1)
 		tb.FillToken(time.Millisecond * 100)
 		wg.Done()
 	}()
