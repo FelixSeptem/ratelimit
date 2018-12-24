@@ -6,8 +6,7 @@ language: go
 
 # Force-enable Go modules. This will be unnecessary when Go 1.12 lands.
 env:
-  - GO111MODULE=on
-  - COVERALLS_TOKEN=s9JIfVVARsVG2hKT6iHOUDPMxcELyenAe
+  - GO111MODULE=on COVERALLS_TOKEN=s9JIfVVARsVG2hKT6iHOUDPMxcELyenAe
 
 # You don't need to test on very old version of the Go compiler. It's the user's
 # responsibility to keep their compilers up to date.
