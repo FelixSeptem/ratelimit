@@ -30,8 +30,11 @@ notifications:
 # Make sure golangci-lint is vendored.
 before_script:
   - go install github.com/golangci/golangci-lint/cmd/golangci-lint
-  - go get github.com/mattn/goveralls
-  - go get github.com/modocache/gover
+  - go install github.com/go-playground/overalls
+  - go install github.com/mattn/goveralls
+  - go install github.com/smartystreets/goconvey
+  - mkdir -p $GOPATH/src/github.com/FelixSeptem
+  - cd $GOPATH/src/github.com/FelixSeptem/ratelimit
 
 # script always runs to completion (set +e). If we have linter issues AND a
 # failing test, we want to see both. Configure golangci-lint with a
@@ -39,7 +42,7 @@ before_script:
 script:
   - golangci-lint run       # run a bunch of code checkers/linters in parallel
   - overalls -project=github.com/FelixSeptem/ratelimit -covermode=count -ignore='.git,_vendor'
-  - goveralls -coverprofile=overalls.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
   - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...  # Run all the tests with the race detector enabled
 
 after_success:
