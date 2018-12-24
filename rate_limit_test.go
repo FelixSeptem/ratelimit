@@ -27,7 +27,10 @@ func TestTokenBucket_FetchToken(t *testing.T) {
 
 func TestTokenBucket_Preheat(t *testing.T) {
 	tb := InitTokenBucket(1024)
-	tb.Preheat(100)
+	err := tb.Preheat(100)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(tb.TokenBucket) != 100 {
 		t.Errorf("expect len = 100 got len = %d", len(tb.TokenBucket))
 	}
@@ -35,8 +38,14 @@ func TestTokenBucket_Preheat(t *testing.T) {
 
 func TestTokenBucket_Flush(t *testing.T) {
 	tb := InitTokenBucket(1024)
-	tb.Preheat(100)
-	tb.Flush(time.Millisecond * 20)
+	err := tb.Preheat(100)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = tb.Flush(time.Millisecond * 20)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if len(tb.TokenBucket) != 0 {
 		t.Errorf("expect len = 0 got len = %d", len(tb.TokenBucket))
 	}

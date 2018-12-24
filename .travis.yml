@@ -7,6 +7,7 @@ language: go
 # Force-enable Go modules. This will be unnecessary when Go 1.12 lands.
 env:
   - GO111MODULE=on
+  - COVERALLS_TOKEN=s9JIfVVARsVG2hKT6iHOUDPMxcELyenAe
 
 # You don't need to test on very old version of the Go compiler. It's the user's
 # responsibility to keep their compilers up to date.
@@ -37,6 +38,7 @@ before_script:
 # failing test, we want to see both. Configure golangci-lint with a
 # .golangci.yml file at the top level of your repo.
 script:
+  - chmod a+x ./coveralls.bash
   - golangci-lint run       # run a bunch of code checkers/linters in parallel
   - go test -v -race ./...  # Run all the tests with the race detector enabled
   - ./coveralls.bash

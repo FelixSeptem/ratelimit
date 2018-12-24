@@ -28,7 +28,7 @@ func main() {
 			for i := 0; i < 1000; i++ {
 				time.Sleep(time.Second * time.Duration(rand.Intn(7)))
 				wg.Add(1)
-				uid := tb.FetchToken()
+				uid, _ := tb.FetchToken()
 				wg.Done()
 				fmt.Printf("[Consumer %d]fetch token result:%v\n", n, uid)
 				if i%10 == 0 {
