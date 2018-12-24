@@ -14,7 +14,7 @@ type tokenBucket struct {
 	TokenBucket chan uuid.UUID
 }
 
-// create a new token bucket with given capacity
+// InitTokenBucket create a new token bucket with given capacity
 func InitTokenBucket(capacity int32) *tokenBucket {
 	ch := make(chan uuid.UUID, capacity)
 	return &tokenBucket{
@@ -22,7 +22,7 @@ func InitTokenBucket(capacity int32) *tokenBucket {
 	}
 }
 
-// preheat a token bucket before it start to fill token
+// Preheat a token bucket before it start to fill token
 func (t *tokenBucket) Preheat(reserved int32) error {
 	if reserved > int32(cap(t.TokenBucket)) {
 		return errors.Errorf("reserved:%d shall not bigger than tokenBucket capacity:%d", reserved, cap(t.TokenBucket))
@@ -40,7 +40,7 @@ func (t *tokenBucket) Preheat(reserved int32) error {
 	return nil
 }
 
-// flush the token bucket during the given time duration
+// Flush the token bucket during the given time duration
 func (t *tokenBucket) Flush(flushDuration time.Duration) error {
 	ticker := time.NewTicker(flushDuration)
 	for {
@@ -53,7 +53,7 @@ func (t *tokenBucket) Flush(flushDuration time.Duration) error {
 	}
 }
 
-// start the timely fill token to the token bucket, if param maxRuntime below or equal to zero, the fill token will run forever
+// Start the timely fill token to the token bucket, if param maxRuntime below or equal to zero, the fill token will run forever
 func (t *tokenBucket) FillToken(fillInterval time.Duration, maxRuntime time.Duration) {
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -79,7 +79,7 @@ func (t *tokenBucket) FillToken(fillInterval time.Duration, maxRuntime time.Dura
 
 }
 
-// consumer to fetch a token from the token bucket, return a UUID and fetch result
+// Consumer to fetch a token from the token bucket, return a UUID and fetch result
 func (t *tokenBucket) FetchToken() (string, bool) {
 	var (
 		taken bool
