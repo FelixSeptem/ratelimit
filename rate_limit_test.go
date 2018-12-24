@@ -1,42 +1,43 @@
 package ratelimit
 
 import (
-	"fmt"
-	"math/rand"
-	"sync"
 	"testing"
 	"time"
 )
 
-func TestTokenBucket(t *testing.T) {
-	tb := InitTokenBucket(3600)
-	if err := tb.Preheat(100); err != nil {
-		t.Fatal(err)
+func TestInitTokenBucket(t *testing.T) {
+	tb := InitTokenBucket(1024)
+	if cap(tb.TokenBucket) != 1024 || len(tb.TokenBucket) != 0 {
+		t.Errorf("expect len = 0 and cap = 100, got len = %d cap = %d", len(tb.TokenBucket), cap(tb.TokenBucket))
 	}
-	var wg sync.WaitGroup
+}
 
-	// producer
-	wg.Add(1)
-	go func() {
-		tb.FillToken(time.Millisecond * 100)
-		wg.Done()
-	}()
-
-	for i := 0; i < 3; i++ {
-		// start multiple consumer
-		go func(n int) {
-			for i := 0; i < 1000; i++ {
-				time.Sleep(time.Second * time.Duration(rand.Intn(7)))
-				wg.Add(1)
-				uid := tb.FetchToken()
-				wg.Done()
-				fmt.Printf("[Consumer %d]fetch token result:%v\n", n, uid)
-				if i%10 == 0 {
-					tb.Flush(time.Second)
-				}
-			}
-		}(i)
+func TestTokenBucket_FetchToken(t *testing.T) {
+	tb := InitTokenBucket(1024)
+	tb.FillToken(time.Millisecond*20, time.Millisecond*200)
+	time.Sleep(time.Millisecond * 20)
+	uid, fetch := tb.FetchToken()
+	if !fetch {
+		t.Error("not fetch token")
 	}
-	wg.Wait()
-	time.Sleep(time.Second * 10)
+	if len(uid) == 0 {
+		t.Error("got empty token")
+	}
+}
+
+func TestTokenBucket_Preheat(t *testing.T) {
+	tb := InitTokenBucket(1024)
+	tb.Preheat(100)
+	if len(tb.TokenBucket) != 100 {
+		t.Errorf("expect len = 100 got len = %d", len(tb.TokenBucket))
+	}
+}
+
+func TestTokenBucket_Flush(t *testing.T) {
+	tb := InitTokenBucket(1024)
+	tb.Preheat(100)
+	tb.Flush(time.Millisecond * 20)
+	if len(tb.TokenBucket) != 0 {
+		t.Errorf("expect len = 0 got len = %d", len(tb.TokenBucket))
+	}
 }

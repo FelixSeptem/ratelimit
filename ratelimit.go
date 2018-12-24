@@ -49,7 +49,7 @@ func (t *tokenBucket) Flush(flushDuration time.Duration) error {
 	}
 }
 
-func (t *tokenBucket) FillToken(fillInterval time.Duration) {
+func (t *tokenBucket) FillToken(fillInterval time.Duration, maxRuntime time.Duration) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
@@ -65,19 +65,26 @@ func (t *tokenBucket) FillToken(fillInterval time.Duration) {
 			fmt.Printf("bucket length: %d with %v\n", len(t.TokenBucket), time.Now())
 		}
 	}()
-	time.Sleep(time.Second * 1)
+	if maxRuntime > 0 {
+		ticker := time.NewTicker(maxRuntime)
+		<-ticker.C
+		return
+	}
 	wg.Wait()
 
 }
 
-func (t *tokenBucket) FetchToken() bool {
-	var taken bool
+func (t *tokenBucket) FetchToken() (string, bool) {
+	var (
+		taken bool
+		token string
+	)
 	select {
 	case uid := <-t.TokenBucket:
 		fmt.Printf("fetch token:%s\n", uid)
+		token = uid.String()
 		taken = true
 	default:
-		taken = false
 	}
-	return taken
+	return token, taken
 }
