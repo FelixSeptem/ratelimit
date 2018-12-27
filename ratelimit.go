@@ -1,4 +1,4 @@
-// package ratelimit provides the ratelimit implement by token bucket
+// Package ratelimit provides the ratelimit implement by token bucket
 package ratelimit
 
 import (
@@ -12,13 +12,16 @@ import (
 
 type tokenBucket struct {
 	TokenBucket chan uuid.UUID
+	quit        chan struct{}
 }
 
 // InitTokenBucket create a new token bucket with given capacity
 func InitTokenBucket(capacity int32) *tokenBucket {
 	ch := make(chan uuid.UUID, capacity)
+	q := make(chan struct{})
 	return &tokenBucket{
 		TokenBucket: ch,
+		quit:        q,
 	}
 }
 
@@ -61,10 +64,11 @@ func (t *tokenBucket) FillToken(fillInterval time.Duration, maxRuntime time.Dura
 		ticker := time.NewTicker(fillInterval)
 		for {
 			uid, _ := uuid.NewV4()
-			<-ticker.C
 			select {
-			case t.TokenBucket <- uid:
-			default:
+			case <-ticker.C:
+				t.TokenBucket <- uid
+			case <-t.quit:
+				return
 			}
 
 			fmt.Printf("bucket length: %d with %v\n", len(t.TokenBucket), time.Now())
@@ -93,4 +97,10 @@ func (t *tokenBucket) FetchToken() (string, bool) {
 	default:
 	}
 	return token, taken
+}
+
+// Stop flush the token bucket then stop fill token
+func (t *tokenBucket) Stop() {
+	t.Flush(time.Second * 1)
+	close(t.quit)
 }

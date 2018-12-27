@@ -37,5 +37,8 @@ func main() {
 			}
 		}(i)
 	}
+
+	// finally
+	// tb.Stop()
 	wg.Wait()
 }

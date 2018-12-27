@@ -50,3 +50,17 @@ func TestTokenBucket_Flush(t *testing.T) {
 		t.Errorf("expect len = 0 got len = %d", len(tb.TokenBucket))
 	}
 }
+
+func TestTokenBucket_Stop(t *testing.T) {
+	tb := InitTokenBucket(1024)
+	go func() {
+		tb.FillToken(time.Second*20, time.Hour)
+	}()
+	go func() {
+		time.Sleep(time.Second)
+		tb.Stop()
+	}()
+	if _, fetch := tb.FetchToken(); fetch {
+		t.Fatalf("expect false got %v", fetch)
+	}
+}
