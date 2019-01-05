@@ -11,3 +11,5 @@ inspired by [token bucket](https://en.wikipedia.org/wiki/Token_bucket)
 go get -u github.com/FelixSeptem/ratelimit
 ```
 
+### Use Example
+[example](https://github.com/FelixSeptem/ratelimit/blob/master/example/example.go)
