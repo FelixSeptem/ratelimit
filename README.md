@@ -5,6 +5,7 @@ inspired by [token bucket](https://en.wikipedia.org/wiki/Token_bucket)
 [![Coverage Status](https://coveralls.io/repos/github/FelixSeptem/ratelimit/badge.svg?branch=master)](https://coveralls.io/github/FelixSeptem/ratelimit?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/FelixSeptem/ratelimit)](https://goreportcard.com/report/github.com/FelixSeptem/ratelimit)
 [![GoDoc](http://godoc.org/github.com/FelixSeptem/ratelimit?status.svg)](http://godoc.org/github.com/FelixSeptem/ratelimit)
+[![GolangCI](https://golangci.com/badges/github.com/FelixSeptem/ratelimit.svg)](https://golangci.com/r/github.com/FelixSeptem/ratelimit)
 
 ### Install
 ```go
